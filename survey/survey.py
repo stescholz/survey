@@ -1,5 +1,7 @@
+import csv
 import os
 from time import time
+import numpy as np
 
 from .form import Form
 
@@ -89,3 +91,27 @@ class Survey:
                     print "Question <{}>: {}".format(self.questions[k].title,
                                                      error)
         return result
+
+    def get_box_data(self):
+        """Get all image data of the boxes."""
+
+        res = [b.data.flatten() for form in self.forms for boxes in form.boxes for b in boxes]
+
+        return np.array(res)
+
+    def write_answers_to_csv(self, fn):
+        """Store the answers of the survey to a csv file.
+
+        Parameters
+        ----------
+        fn : str
+            The file name.
+        """
+
+        with open(fn, "w") as csvfile:
+            cw = csv.writer(csvfile)
+            # header
+            cw.writerow([q.title for q in self.questions])
+
+            for answers in self.get_answers():
+                cw.writerow(answers)

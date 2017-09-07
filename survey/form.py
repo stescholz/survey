@@ -111,21 +111,28 @@ class Form:
 
         return img
 
-    def get_answers(self):
+    def get_answers(self, full=False):
         """Find all answers to the questions.
+
+        Parameters
+        ----------
+        full : boolean, optional
+            If true, the status of every box of the question is returned.
+            Otherwise only the answer is given.
 
         Returns
         -------
         tuple
-            The first element is the list of answers. For every question the
-            status of the box is given. The second element is a dictionary
-            of the errors which occured in the analysis of the boxes.
+            The first element is the list of answers. According to the parameter
+            for every question the status all the boxes is given or only the
+            anwer. The second element is a dictionary of the errors which
+            occured in the analysis of the boxes.
         """
         answers = []
         errors = {}
 
         for i, (q, boxes) in enumerate(zip(self.questions, self.boxes)):
-            ans, error = q.get_answers(boxes)
+            ans, error = q.get_answers(boxes, full)
             answers.append(ans)
             if error:
                 errors[i] = error
