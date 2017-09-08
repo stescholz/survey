@@ -79,18 +79,23 @@ class Survey:
             q.coords = [(x+offset_x, y+offset_y) for x, y in q.coords]
 
     def get_answers(self):
-        """Get all answers of the forms and print errors."""
-        result = []
+        """Get all answers of the forms.
+
+        Returns
+        tuple of a list and dict
+            The first list contains all answers and the second one the errors
+            which occurred.
+        """
+        answers = []
+        errors = {}
 
         for i, form in enumerate(self.forms):
-            answers, errors = form.get_answers()
-            result.append(answers)
-            if errors:
-                print "Error form {}:".format(i)
-                for k, error in errors.items():
-                    print "Question <{}>: {}".format(self.questions[k].title,
-                                                     error)
-        return result
+            answ, err = form.get_answers()
+            answers.append(answ)
+            if err:
+                errors[i] = err
+
+        return answers, errors
 
     def get_box_data(self):
         """Get all image data of the boxes."""
@@ -99,7 +104,7 @@ class Survey:
 
         return np.array(res)
 
-    def write_answers_to_csv(self, fn):
+    def write_answers_to_csv(self, fn, log=None):
         """Store the answers of the survey to a csv file.
 
         Parameters
@@ -108,10 +113,49 @@ class Survey:
             The file name.
         """
 
+        answers, errors = self.get_answers()
+
         with open(fn, "w") as csvfile:
             cw = csv.writer(csvfile)
             # header
             cw.writerow([q.title for q in self.questions])
 
-            for answers in self.get_answers():
-                cw.writerow(answers)
+            for answ in answers:
+                cw.writerow(answ)
+        if log is None:
+            for i, errors in errors.items():
+                print "#"*60
+                print "Error form {}:".format(i)
+                for k, error in errors.items():
+                    print "Question <{}>: {}".format(self.questions[k].title,
+                                                 error)
+        else:
+            self.create_html_log(errors, log)
+
+    def create_html_log(self, errors, fn):
+
+        with open(fn, "w") as html:
+            html.write("<html><head><title>Error log</title><style>")
+            html.write("p {margin:0;} ")
+            html.write("a {color:green;} ")
+            html.write("p.err a{color:red;}")
+            html.write("ul {margin:0;} ")
+            html.write("</style></head><body>")
+            for i, form in enumerate(self.forms):
+                err = errors[i] if i in errors else None
+                cl = " class=err" if err else ""
+                html.write(
+                    '<p{}><a href="{}" target="_blank">{}</a></p>'.format(cl,
+                                                                      form.fn,
+                                                                      form.fn)
+                )
+                if err:
+                    html.write("<ul>")
+                    for k, error in err.items():
+                        html.write(
+                            "<li>Question {}: {}</li>".format(
+                                                    self.questions[k].title,
+                                                    error)
+                        )
+                    html.write("</ul>")
+            html.write("</body></html>")
