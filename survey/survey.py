@@ -100,7 +100,8 @@ class Survey:
     def get_box_data(self):
         """Get all image data of the boxes."""
 
-        res = [b.data.flatten() for form in self.forms for boxes in form.boxes for b in boxes]
+        res = [b.data.flatten() for form in self.forms for boxes in form.boxes
+               for b in boxes]
 
         return np.array(res)
 
@@ -128,7 +129,7 @@ class Survey:
                 print "Error form {}:".format(i)
                 for k, error in errors.items():
                     print "Question <{}>: {}".format(self.questions[k].title,
-                                                 error)
+                                                     error)
         else:
             self.create_html_log(errors, log)
 
@@ -145,9 +146,8 @@ class Survey:
                 err = errors[i] if i in errors else None
                 cl = " class=err" if err else ""
                 html.write(
-                    '<p{}><a href="{}" target="_blank">{}</a></p>'.format(cl,
-                                                                      form.fn,
-                                                                      form.fn)
+                    '<p{}><a href="{}" target="_blank">'
+                    '{}</a></p>'.format(cl, form.fn, form.fn)
                 )
                 if err:
                     html.write("<ul>")
