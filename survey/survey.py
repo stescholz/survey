@@ -78,19 +78,26 @@ class Survey:
         for q in self.questions:
             q.coords = [(x+offset_x, y+offset_y) for x, y in q.coords]
 
-    def get_answers(self):
+    def get_answers(self, full=False):
         """Get all answers of the forms.
+
+        Parameters
+        ----------
+        full : boolean, optional
+            If true, the status of every box of the question is returned.
+            Otherwise only the answer is given.
 
         Returns
         tuple of a list and dict
             The first list contains all answers and the second one the errors
-            which occurred.
+            which occurred. According to the parameter for every question the
+            status of all the boxes is given or only the answer.
         """
         answers = []
         errors = {}
 
         for i, form in enumerate(self.forms):
-            answ, err = form.get_answers()
+            answ, err = form.get_answers(full)
             answers.append(answ)
             if err:
                 errors[i] = err

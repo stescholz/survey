@@ -123,10 +123,10 @@ class Form:
         Returns
         -------
         tuple
-            The first element is the list of answers. According to the parameter
-            for every question the status all the boxes is given or only the
-            anwer. The second element is a dictionary of the errors which
-            occured in the analysis of the boxes.
+            The first element is the list of answers. According to the
+            parameter for every question the status of all the boxes is given
+            or only the answer. The second element is a dictionary of the
+            errors which occured in the analysis of the boxes.
         """
         answers = []
         errors = {}
