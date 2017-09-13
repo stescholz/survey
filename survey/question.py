@@ -92,7 +92,7 @@ class Question:
 
             if s > 1:  # more than one answer - typically a correction was done
                 # choose the answer with biggest mean (more white pixels)
-                answers[np.argmax(answers)] = True
+                answers[np.argmax(means)] = True
                 error = "(warn) multiple boxes marked - " \
                         "took the one with more white {}".format(means)
             else:
