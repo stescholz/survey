@@ -49,7 +49,7 @@ class Question:
         """
         return [Box(left, top, img) for (left, top) in self.coords]
 
-    def get_answers(self, boxes, full=False, lower=120, upper=197):
+    def get_answers(self, boxes, full=False, lower=115, upper=197):
         """Identify the answers to the question.
 
         Collect the answers of the questions for the boxes. It will  predict
@@ -79,10 +79,12 @@ class Question:
         answers = [False]*n
         error = ""
         means = np.zeros(n)
+        medians = np.zeros(n)
 
         for i, b in enumerate(boxes):
             mean = b.mean()
             means[i] = mean
+            medians[i] = np.median(b.data)
             if lower < mean and mean < upper:
                 answers[i] = True
 
@@ -93,9 +95,13 @@ class Question:
 
             if s > 1:  # more than one answer - typically a correction was done
                 # choose the answer with biggest mean (more white pixels)
-                answers[np.argmax(means)] = True
+                b_mean = np.where(means < upper,
+                                  np.where(means > lower, means, 0),
+                                  0)
+                answers[np.argmax(b_mean)] = True
                 error = "(warn) multiple boxes marked - " \
-                        "took the one with more white {}".format(means)
+                        "took the one with more white {} {}".format(means,
+                                                                    medians)
             else:
                 error = "no boxes marked {}".format(means)
 
