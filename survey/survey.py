@@ -130,6 +130,7 @@ class Survey:
 
             for answ in answers:
                 cw.writerow(answ)
+
         if log is None:
             for i, errors in errors.items():
                 print "#"*60

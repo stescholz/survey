@@ -49,7 +49,7 @@ class Question:
         """
         return [Box(left, top, img) for (left, top) in self.coords]
 
-    def get_answers(self, boxes, full=False, tresh=197):
+    def get_answers(self, boxes, full=False, lower=120, upper=197):
         """Identify the answers to the question.
 
         Collect the answers of the questions for the boxes. It will  predict
@@ -63,9 +63,10 @@ class Question:
         full : boolean, optional
             If true, the status of every box of the question is returned.
             Otherwise only the answer is given.
-        tresh : int, optional
+        lower, upper : int, optional
             The treshold for the mean of the pixels of the box. If the mean is
-            below the treshold the box should be checked otherwise not.
+            between the upper and lower bound the box should be checked
+            otherwise not.
 
         Returns
         -------
@@ -82,7 +83,7 @@ class Question:
         for i, b in enumerate(boxes):
             mean = b.mean()
             means[i] = mean
-            if mean < tresh:
+            if lower < mean and mean < upper:
                 answers[i] = True
 
         s = sum(answers)
