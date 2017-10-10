@@ -1,3 +1,4 @@
+import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -31,10 +32,10 @@ def transform(data):
     return questions, quantities
 
 
-def save_data(data, fn):
-    """Save data for plotting to file
+def write_csv(data, fn):
+    """Save data for plotting to a csv file
 
-    Transform the data and save to file.
+    Transform the data and save to csv file.
 
     Parameters
     ----------
@@ -44,7 +45,7 @@ def save_data(data, fn):
         of times the answer was given.
         [("Question1", {"yes":3, "no":4}, ("Question2", {"a":1, "no":2})]
     fn : str
-        The name of the file.
+        The name of the csv file.
     """
 
     questions, quantities = transform(data)
@@ -53,11 +54,13 @@ def save_data(data, fn):
         quantities["no_answer"] = quantities[""]
         del quantities[""]
 
-    with open(fn, "w") as f:
-        f.write("{} {}\n".format("question", " ".join(quantities.keys())))
+    with open(fn, "w") as csvfile:
+        cw = csv.writer(csvfile)
+        # header
+        cw.writerow(["question"] + quantities.keys())
+
         for i, question in enumerate(questions):
-            numbers = " ".join([str(v[i]) for v in quantities.values()])
-            f.write("{} {}\n".format(question, numbers))
+            cw.writerow([question] + [v[i] for v in quantities.values()])
 
 
 def create_barplot(data, fn=""):
