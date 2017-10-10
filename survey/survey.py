@@ -1,7 +1,8 @@
 import csv
 import os
-from time import time
 import numpy as np
+from collections import Counter
+from time import time
 
 from .form import Form
 
@@ -119,6 +120,12 @@ class Survey:
         ----------
         fn : str
             The file name.
+
+        Returns
+        -------
+        list
+            A list of the answers to the questions for each form which was
+            written to the csv file.
         """
 
         answers, errors = self.get_answers()
@@ -140,6 +147,8 @@ class Survey:
                                                      error)
         else:
             self.create_html_log(errors, log)
+
+        return answers
 
     def create_html_log(self, errors, fn):
 
@@ -167,3 +176,28 @@ class Survey:
                         )
                     html.write("</ul>")
             html.write("</body></html>")
+
+    def statistics(self, answers):
+        """Do some simple statistics of the answers.
+
+        Parameters
+        ----------
+        answers: List of answers to each question for each form.
+
+        Returns
+        -------
+        list
+            A list of tuples containing the title of the questions and the
+            number of each possible answer.
+        """
+
+        data = []
+
+        for i, q in enumerate(self.questions):
+            ans_counter = {answer: 0 for answer in q.answers}
+            ans_counter[""] = 0  # no answer
+            ans = [a.strip() for form in answers for a in form[i].split(',')]
+            ans_counter.update(dict(Counter(ans)))
+            data.append((q.title, ans_counter))
+
+        return data
