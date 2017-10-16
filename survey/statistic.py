@@ -71,10 +71,10 @@ def write_tex(data, fn):
     For the input
     [("Question1", {"yes":3, "no":4}, ("Question2", {"a b":1, "c  d":2})]
     the file contains
-    \newcommand{Question1yes}{3}
-    \newcommand{Question1no}{4}
-    \newcommand{Question2ab}{1}
-    \newcommand{Question2cd}{2}
+    \newcommand{\Question1yes}{3}
+    \newcommand{\Question1no}{4}
+    \newcommand{\Question2ab}{1}
+    \newcommand{\Question2cd}{2}
 
     Parameters
     ----------
@@ -93,7 +93,7 @@ def write_tex(data, fn):
             for k, v in answers.items():
                 if not k:
                     k = "na"
-                f.write("\\newcommand{{{}{}}}{{{}}}\n".format(
+                f.write("\\newcommand{{\\{}{}}}{{{}}}\n".format(
                                                         title.replace(" ", ""),
                                                         k.replace(" ", ""),
                                                         v))
