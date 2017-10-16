@@ -42,7 +42,8 @@ def write_csv(data, fn):
     data : list
         A list of tuples. First element is the title of the question and the
         second one is a dictionary which maps the possible answer to the number
-        of times the answer was given.
+        of times the answer was given. If there is no title for the answer, the
+        key is set to "na".
         [("Question1", {"yes":3, "no":4}, ("Question2", {"a":1, "no":2})]
     fn : str
         The name of the csv file.
@@ -51,7 +52,7 @@ def write_csv(data, fn):
     questions, quantities = transform(data)
 
     if "" in quantities:
-        quantities["no_answer"] = quantities[""]
+        quantities["na"] = quantities[""]
         del quantities[""]
 
     with open(fn, "w") as csvfile:
@@ -61,6 +62,41 @@ def write_csv(data, fn):
 
         for i, question in enumerate(questions):
             cw.writerow([question] + [v[i] for v in quantities.values()])
+
+
+def write_tex(data, fn):
+    r"""Save data for plotting to a tex file
+
+    Create a tex file which contains the data as variables to build a plot.
+    For the input
+    [("Question1", {"yes":3, "no":4}, ("Question2", {"a b":1, "c  d":2})]
+    the file contains
+    \newcommand{Question1yes}{3}
+    \newcommand{Question1no}{4}
+    \newcommand{Question2ab}{1}
+    \newcommand{Question2cd}{2}
+
+    Parameters
+    ----------
+    data : list
+        A list of tuples. First element is the title of the question and the
+        second one is a dictionary which maps the possible answer to the number
+        of times the answer was given. If there is no title for the answer, the
+        key is set to "na".
+        [("Question1", {"yes":3, "no":4}, ("Question2", {"a":1, "no":2})]
+    fn : str
+        The name of the tex file.
+    """
+
+    with open(fn, "w") as f:
+        for title, answers in data:
+            for k, v in answers.items():
+                if not k:
+                    k = "na"
+                f.write("\\newcommand{{{}{}}}{{{}}}\n".format(
+                                                        title.replace(" ", ""),
+                                                        k.replace(" ", ""),
+                                                        v))
 
 
 def create_barplot(data, fn=""):
