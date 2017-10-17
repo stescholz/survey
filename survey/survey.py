@@ -23,7 +23,7 @@ class Survey:
     Parameters
     ----------
     directory : str
-        The directory where the images are stored.
+        The directory where the images (jpg) are stored.
     questions : list
         The list of Question instances for the survey.
     header : tupel
@@ -78,6 +78,19 @@ class Survey:
         """
         for q in self.questions:
             q.coords = [(x+offset_x, y+offset_y) for x, y in q.coords]
+
+    def check_positions(self, i=0, fn="check.png"):
+        """Mark the header and all boxes in the i-th form and save the image.
+
+        Parameters
+        ----------
+        i : int, optinal
+            Index of the form.
+        fn : str, optional
+            Filename for the image.
+        """
+
+        self.forms[i].check_positions().save(fn)
 
     def get_answers(self, full=False):
         """Get all answers of the forms.

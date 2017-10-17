@@ -1,5 +1,5 @@
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 class Form:
@@ -95,15 +95,18 @@ class Form:
         self.boxes = [q.generate_boxes(self.img) for q in self.questions]
 
     def check_positions(self):
-        """Mark all positions of the boxes in the image.
+        """Mark all positions of the boxes and the header in the image.
 
         Returns
         -------
         object
-            The copy of the Image instance where all boxes are marked as
-            rectangles.
+            The copy of the Image instance where all boxes and the header are
+            marked as rectangles.
         """
         img = self.img.copy()
+
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(self.header, outline=0)
 
         for boxes in self.boxes:
             for b in boxes:
