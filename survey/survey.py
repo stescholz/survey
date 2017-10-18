@@ -92,6 +92,16 @@ class Survey:
 
         self.forms[i].check_positions().save(fn)
 
+    def check_all(self):
+        """Mark the header and all boxes for each form and save the image.
+        Add a "check" to the filename and save as PNG.
+        """
+
+        for form in self.forms:
+            fn = form.fn
+            fn = "{}_check.png".format(fn[:-4])
+            form.check_positions().save(fn)
+
     def get_answers(self, full=False):
         """Get all answers of the forms.
 
