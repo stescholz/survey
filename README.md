@@ -30,7 +30,7 @@ of the black pixels. This gives us a rotation angle to correct the skew.
 ![rotation](https://user-images.githubusercontent.com/25635571/29772356-b628054a-8bf8-11e7-9f90-97ab7764eae4.png)
 
 In the second version there is a rectangle in the header of the survey. We
-know seach for the upper edge of this rectangle and correct the skew
+seach for the upper edge of this rectangle and correct the skew
 according to its position.
 
 ### Shift
