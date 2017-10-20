@@ -29,6 +29,10 @@ of the black pixels. This gives us a rotation angle to correct the skew.
 
 ![rotation](https://user-images.githubusercontent.com/25635571/29772356-b628054a-8bf8-11e7-9f90-97ab7764eae4.png)
 
+In the second version there is a rectangle in the header of the survey. We
+know seach for the upper edge of this rectangle and correct the skew
+according to its position.
+
 ### Shift
 The next problem when scanning is the shift of each form. Therefore we check
 again the header of the form and calculate the bounding box. Every form is then
@@ -45,6 +49,6 @@ pixels.
 ## Analysis
 ### First try
 We take the mean of the pixels in each box. If this is lower than a bound the
-box is supposed to be checked and otherwise not (black pixel has value 1 and
+box is supposed to be checked and otherwise not (black pixel has value 0 and
 white pixel has value 255). This leads already to good results but it is not
 easy to get a good bound.
