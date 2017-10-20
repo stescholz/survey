@@ -49,7 +49,7 @@ class Question:
         """
         return [Box(left, top, img) for (left, top) in self.coords]
 
-    def get_answers(self, boxes, full=False, lower=115, upper=197):
+    def get_answers(self, boxes, lower, upper, full=False):
         """Identify the answers to the question.
 
         Collect the answers of the questions for the boxes. It will  predict
@@ -60,13 +60,13 @@ class Question:
         ----------
         boxes : list
             List of the Box instances for the question.
-        full : boolean, optional
-            If true, the status of every box of the question is returned.
-            Otherwise only the answer is given.
-        lower, upper : int, optional
+        lower, upper : int
             The treshold for the mean of the pixels of the box. If the mean is
             between the upper and lower bound the box should be checked
             otherwise not.
+        full : boolean, optional
+            If true, the status of every box of the question is returned.
+            Otherwise only the answer is given.
 
         Returns
         -------

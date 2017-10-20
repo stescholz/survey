@@ -1,5 +1,8 @@
+from __future__ import print_function
+
 import csv
 import os
+import sys
 import numpy as np
 from collections import Counter
 from time import time
@@ -19,6 +22,10 @@ class Survey:
         The list of Question instances for the survey.
     forms: list
         The list of Form instance for the survey.
+    lower, upper : int
+        The treshold for the mean of the pixels of the box. If the mean is
+        between the upper and lower bound the box should be checked
+        otherwise not.
 
     Parameters
     ----------
@@ -31,28 +38,38 @@ class Survey:
         form to adjust all forms.
     offset_x, offset_y : int, optional
         The offset in x and y direction to adjust the position of the boxes.
+    lower, upper : int, optional
+        The treshold for the mean of the pixels of the box. If the mean is
+        between the upper and lower bound the box should be checked
+        otherwise not.
     """
-    def __init__(self, directory, questions, header, offset_x=0, offset_y=0):
+    def __init__(self, directory, questions, header, offset_x=0, offset_y=0,
+                 lower=115, upper=208):
 
         self.questions = questions
         if offset_x != 0 or offset_y != 0:
             self.transform_questions(offset_x, offset_y)
 
+        self.lower, self.upper = lower, upper
+
         self.forms = []
 
-        print "start init..."
+        print("start init...")
         start = time()
 
-        print "rotate...",
-
+        i = 1
         for f in sorted(os.listdir(directory)):
             fn = os.path.join(directory, f)
             if os.path.isfile(fn) and f.endswith("jpg"):
+                sys.stdout.write("\rrotate ...{:4d} ".format(i))
+                sys.stdout.flush()
+                i += 1
+
                 form = Form(fn, questions, header)
                 form.rotate()
                 self.forms.append(form)
                 # break
-        print "done"
+        print("done", flush=True)
 
         # Get left upper corner of the bounding box of the header from the
         # first form. Every form is shifted against this coordinates to get
@@ -60,13 +77,15 @@ class Survey:
         form = self.forms[0]
         left, upper = form.get_left_upper_bbox_header()
 
-        print "shift...",
-        for form in self.forms:
+        for i, form in enumerate(self.forms):
+            sys.stdout.write("\rshift  ...{:4d} ".format(i+1))
+            sys.stdout.flush()
+
             form.shift(left, upper)
             form.init_questions()
-        print "done"
+        print("done")
 
-        print "init done ({:.2f}s)".format(time()-start)
+        print("init done ({:.2f}s)".format(time()-start))
 
     def transform_questions(self, offset_x, offset_y):
         """Transform the coordinates of the boxes of the questions.
@@ -79,7 +98,7 @@ class Survey:
         for q in self.questions:
             q.coords = [(x+offset_x, y+offset_y) for x, y in q.coords]
 
-    def check_positions(self, i=0, fn="check.png"):
+    def check_positions(self, i=0, fn="check.png", original=False):
         """Mark the header and all boxes in the i-th form and save the image.
 
         Parameters
@@ -88,9 +107,11 @@ class Survey:
             Index of the form.
         fn : str, optional
             Filename for the image.
+        original : boolean, optional
+            Use the orignal position of the center or the calculated.
         """
 
-        self.forms[i].check_positions().save(fn)
+        self.forms[i].check_positions(original).save(fn)
 
     def check_all(self):
         """Mark the header and all boxes for each form and save the image.
@@ -121,7 +142,7 @@ class Survey:
         errors = {}
 
         for i, form in enumerate(self.forms):
-            answ, err = form.get_answers(full)
+            answ, err = form.get_answers(self.lower, self.upper, full)
             answers.append(answ)
             if err:
                 errors[i] = err
@@ -163,11 +184,11 @@ class Survey:
 
         if log is None:
             for i, errors in errors.items():
-                print "#"*60
-                print "Error form {}:".format(i)
+                print("#"*60)
+                print("Error form {}:".format(i))
                 for k, error in errors.items():
-                    print "Question <{}>: {}".format(self.questions[k].title,
-                                                     error)
+                    print("Question <{}>: {}".format(self.questions[k].title,
+                                                     error))
         else:
             self.create_html_log(errors, log)
 
