@@ -69,7 +69,7 @@ class Survey:
                 form.rotate()
                 self.forms.append(form)
                 # break
-        print("done", flush=True)
+        print("done")
 
         # Get left upper corner of the bounding box of the header from the
         # first form. Every form is shifted against this coordinates to get
